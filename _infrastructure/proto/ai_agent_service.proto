@@ -1,0 +1,322 @@
+syntax = "proto3";
+
+package ai_agent;
+
+// AI Agent Service - Comprehensive service for managing thousands of AI agents
+service AIAgentService {
+  // Agent Lifecycle Management
+  rpc CreateAgent(CreateAgentRequest) returns (Agent);
+  rpc GetAgent(GetAgentRequest) returns (Agent);
+  rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse);
+  rpc UpdateAgent(UpdateAgentRequest) returns (Agent);
+  rpc DeleteAgent(DeleteAgentRequest) returns (DeleteAgentResponse);
+  rpc RegisterAgent(RegisterAgentRequest) returns (RegisterAgentResponse);
+  rpc DeregisterAgent(DeregisterAgentRequest) returns (DeregisterAgentResponse);
+
+  // Task Management
+  rpc AssignTask(AssignTaskRequest) returns (Task);
+  rpc GetTask(GetTaskRequest) returns (Task);
+  rpc UpdateTask(UpdateTaskRequest) returns (Task);
+  rpc CompleteTask(CompleteTaskRequest) returns (Task);
+  rpc CancelTask(CancelTaskRequest) returns (CancelTaskResponse);
+  rpc ListTasks(ListTasksRequest) returns (ListTasksResponse);
+
+  // Agent Communication
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+  rpc ReceiveMessages(ReceiveMessagesRequest) returns (ReceiveMessagesResponse);
+  rpc BroadcastMessage(BroadcastMessageRequest) returns (BroadcastMessageResponse);
+
+  // Health and Monitoring
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+  rpc GetMetrics(GetMetricsRequest) returns (GetMetricsResponse);
+  rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
+
+  // Resource Management
+  rpc AllocateResources(AllocateResourcesRequest) returns (AllocateResourcesResponse);
+  rpc ReleaseResources(ReleaseResourcesRequest) returns (ReleaseResourcesResponse);
+  rpc GetResourceUsage(GetResourceUsageRequest) returns (GetResourceUsageResponse);
+}
+
+// Agent represents an AI agent instance
+message Agent {
+  string id = 1;
+  string type = 2;
+  string name = 3;
+  string status = 4;
+  string config = 5;  // JSON configuration
+  string endpoint = 6;
+  int64 created_at = 7;
+  int64 updated_at = 8;
+  map<string, string> metadata = 9;
+  repeated string capabilities = 10;
+  ResourceUsage resource_usage = 11;
+}
+
+// Task represents a task assigned to an agent
+message Task {
+  string id = 1;
+  string agent_id = 2;
+  string type = 3;
+  string status = 4;
+  string task_data = 5;  // JSON task data
+  string result = 6;     // JSON result
+  int64 created_at = 7;
+  int64 updated_at = 8;
+  int64 completed_at = 9;
+  int32 priority = 10;
+  map<string, string> metadata = 11;
+}
+
+// Message represents communication between agents
+message Message {
+  string id = 1;
+  string from_agent_id = 2;
+  string to_agent_id = 3;
+  string message_type = 4;
+  string content = 5;  // JSON content
+  int64 timestamp = 6;
+  map<string, string> metadata = 7;
+}
+
+// Metrics represents agent performance metrics
+message Metrics {
+  string agent_id = 1;
+  int64 timestamp = 2;
+  double cpu_usage = 3;
+  double memory_usage = 4;
+  int64 requests_processed = 5;
+  double average_response_time = 6;
+  int64 error_count = 7;
+  double success_rate = 8;
+  map<string, double> custom_metrics = 9;
+}
+
+// ResourceUsage represents agent resource consumption
+message ResourceUsage {
+  double cpu_usage = 1;
+  double memory_usage = 2;
+  double disk_usage = 3;
+  int64 network_bytes_sent = 4;
+  int64 network_bytes_received = 5;
+  map<string, double> custom_resources = 6;
+}
+
+// Agent Lifecycle Management Requests/Responses
+message CreateAgentRequest {
+  string type = 1;
+  string name = 2;
+  string config = 3;  // JSON configuration
+  map<string, string> metadata = 4;
+}
+
+message GetAgentRequest {
+  string id = 1;
+}
+
+message ListAgentsRequest {
+  string type = 1;
+  string status = 2;
+  int32 page_size = 3;
+  string page_token = 4;
+}
+
+message ListAgentsResponse {
+  repeated Agent agents = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+message UpdateAgentRequest {
+  string id = 1;
+  string config = 2;  // JSON configuration
+  map<string, string> metadata = 3;
+}
+
+message DeleteAgentRequest {
+  string id = 1;
+}
+
+message DeleteAgentResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message RegisterAgentRequest {
+  string id = 1;
+  string endpoint = 2;
+}
+
+message RegisterAgentResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeregisterAgentRequest {
+  string id = 1;
+}
+
+message DeregisterAgentResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Task Management Requests/Responses
+message AssignTaskRequest {
+  string agent_id = 1;
+  string task_data = 2;  // JSON task data
+  int32 priority = 3;
+  map<string, string> metadata = 4;
+}
+
+message GetTaskRequest {
+  string id = 1;
+}
+
+message UpdateTaskRequest {
+  string id = 1;
+  string status = 2;
+  string result = 3;  // JSON result
+  map<string, string> metadata = 4;
+}
+
+message CompleteTaskRequest {
+  string id = 1;
+  string result = 2;  // JSON result
+}
+
+message CancelTaskRequest {
+  string id = 1;
+  string reason = 2;
+}
+
+message CancelTaskResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListTasksRequest {
+  string agent_id = 1;
+  string status = 2;
+  int32 page_size = 3;
+  string page_token = 4;
+}
+
+message ListTasksResponse {
+  repeated Task tasks = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+// Agent Communication Requests/Responses
+message SendMessageRequest {
+  string from_agent_id = 1;
+  string to_agent_id = 2;
+  string message_type = 3;
+  string content = 4;  // JSON content
+  map<string, string> metadata = 5;
+}
+
+message SendMessageResponse {
+  bool success = 1;
+  string message_id = 2;
+  string message = 3;
+}
+
+message ReceiveMessagesRequest {
+  string agent_id = 1;
+  int32 limit = 2;
+  string message_type = 3;
+}
+
+message ReceiveMessagesResponse {
+  repeated Message messages = 1;
+  int32 total_count = 2;
+}
+
+message BroadcastMessageRequest {
+  string from_agent_id = 1;
+  string message_type = 2;
+  string content = 3;  // JSON content
+  repeated string agent_types = 4;
+  map<string, string> metadata = 5;
+}
+
+message BroadcastMessageResponse {
+  bool success = 1;
+  int32 recipients_count = 2;
+  string message = 3;
+}
+
+// Health and Monitoring Requests/Responses
+message HealthCheckRequest {
+  string agent_id = 1;
+}
+
+message HealthCheckResponse {
+  string status = 1;
+  int64 timestamp = 2;
+  string version = 3;
+  double uptime = 4;
+  map<string, string> details = 5;
+}
+
+message GetMetricsRequest {
+  string agent_id = 1;
+  int64 start_time = 2;
+  int64 end_time = 3;
+}
+
+message GetMetricsResponse {
+  repeated Metrics metrics = 1;
+  string metrics_json = 2;  // JSON formatted metrics
+}
+
+message GetStatusRequest {
+  string agent_id = 1;
+}
+
+message GetStatusResponse {
+  string status = 1;
+  int32 active_agents = 2;
+  int32 total_tasks = 3;
+  int32 pending_tasks = 4;
+  int32 completed_tasks = 5;
+  int32 failed_tasks = 6;
+  map<string, string> details = 7;
+}
+
+// Resource Management Requests/Responses
+message AllocateResourcesRequest {
+  string agent_id = 1;
+  double cpu_request = 2;
+  double memory_request = 3;
+  double disk_request = 4;
+  map<string, double> custom_resources = 5;
+}
+
+message AllocateResourcesResponse {
+  bool success = 1;
+  string message = 2;
+  ResourceUsage allocated_resources = 3;
+}
+
+message ReleaseResourcesRequest {
+  string agent_id = 1;
+  bool release_all = 2;
+  repeated string resource_types = 3;
+}
+
+message ReleaseResourcesResponse {
+  bool success = 1;
+  string message = 2;
+  ResourceUsage released_resources = 3;
+}
+
+message GetResourceUsageRequest {
+  string agent_id = 1;
+}
+
+message GetResourceUsageResponse {
+  ResourceUsage resource_usage = 1;
+  map<string, ResourceUsage> historical_usage = 2;
+}
